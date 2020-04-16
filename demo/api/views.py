@@ -1,40 +1,50 @@
-from django.shortcuts import render
-
-# Create your views here.
-from django.http.response import JsonResponse, HttpResponse
-from api.models import Product, Category
+from django.http.response import JsonResponse
+from api.models import Company, Vacancy
 from django.http import Http404
 
-def product_list(request):
-    products=Product.objects.all()
-    products_json=[product.to_json() for product in products]
-    return JsonResponse(products_json, safe=False)
+def company_list(request):
+    if request.method=='GET':
+        companies = Company.objects.all()
+        # products = Product.objects.filter(price__gte=1000).order_by('-price')
+        companies_json=[company.to_json() for company in companies]
+        return JsonResponse(companies_json, safe=False)
 
-def product_detail(request, product_id):
+def vacancy_detail(request, company_id):
     try:
-        product = Product.objects.get(id=product_id)
-    except Product.DoesNotExist as e:
+        company = Company.objects.get(id=company_id)
+    except Company.DoesNotExist as e:
         return JsonResponse({'error': str(e)})
         # raise Http404
-    return JsonResponse(product.to_json())
+    if request.method == 'GET':
+        return JsonResponse(company.to_json())
 
-def category_list(request):
-    categories=Category.objects.all()
-    categories_json=[category.to_json() for category in categories]
-    return JsonResponse(categories_json, safe=False)
-
-def category_detail(request, category_id):
+def company_vacancies(request, company_id):
     try:
-        category = Category.objects.get(id=category_id)
-    except Category.DoesNotExist as e:
+        company = Company.objects.get(id=company_id)
+    except Company.DoesNotExist as e:
         return JsonResponse({'error': str(e)})
         # raise Http404
-    return JsonResponse(category.to_json())
+    return JsonResponse({'data': f'vacancies of company: {company_id}'})
 
-def category_products(request, catId):
+
+def vacancy_list(request):
+    if request.method=='GET':
+        vacancies = Vacancy.objects.all()
+        # products = Product.objects.filter(price__gte=1000).order_by('-price')
+        vacancies_json=[vacancy.to_json() for vacancy in vacancies]
+        return JsonResponse(vacancies_json, safe=False)
+
+def company_detail(request, vacancy_id):
     try:
-        products = Product.objects.filter(category_id=catId)
-        products_json = [product.to_json() for product in products]
-    except Product.DoesNotExist as e:
-        raise JsonResponse({'error': str(e)})
-    return JsonResponse(products_json, safe=False)
+        vacancy = Vacancy.objects.get(id=vacancy_id)
+    except Vacancy.DoesNotExist as e:
+        return JsonResponse({'error': str(e)})
+        # raise Http404
+    if request.method == 'GET':
+        return JsonResponse(vacancy.to_json())
+
+def top_ten_vacancies(request):
+    if request.method=='GET':
+        vacancies = Vacancy.objects.order_by('-salary').limit(10)
+        vacancies_json=[vacancy.to_json() for vacancy in vacancies]
+        return JsonResponse(vacancies_json, safe=False)

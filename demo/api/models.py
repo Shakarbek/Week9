@@ -2,35 +2,36 @@ from django.db import models
 
 # Create your models here.
 
-class Product(models.Model):
+
+class Company(models.Model):
     name = models.CharField(max_length=30, default='')
-    price = models.FloatField()
     description = models.TextField(default='')
-    count= models.IntegerField()
-    category_id=models.IntegerField()
+    city= models.CharField(max_length=50, default='')
+    address=models.TextField()
 
     def to_json(self):
         return {
             'id': self.id,
             'name': self.name,
-            'price': self.price,
             'description': self.description,
-            'count': self.count,
-            'category_id': self.category_id
+            'city': self.city,
+            'address': self.address
         }
 
-class Category(models.Model):
-    name= models.CharField(max_length=30, default='')
-
+class Vacancy(models.Model):
+    name = models.CharField(max_length=30, default='')
+    description = models.TextField(default='')
+    salary = models.FloatField()
+    company = models.ForeignKey(Company, on_delete=models.CASCADE, related_name='vacancies')
 
     def to_json(self):
-        return{
+        return {
             'id': self.id,
-            'name': self.name
+            'name': self.name,
+            'description': self.description,
+            'salary': self.salary,
+            'company': self.company
         }
-
-
-
 
 
 
