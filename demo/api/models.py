@@ -33,6 +33,9 @@ class Vacancy(models.Model):
             'company': self.company
         }
 
+    def __str__(self):
+        return f'Vacancy id={self.id}, name={self.name}'
+
 
 
 
